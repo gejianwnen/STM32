@@ -1,0 +1,285 @@
+## @file
+# PlatformInitPreMem PEIM
+#
+# @copyright
+# INTEL CONFIDENTIAL
+# Copyright 2009 - 2019 Intel Corporation. <BR>
+#
+# The source code contained or described herein and all documents related to the
+# source code ("Material") are owned by Intel Corporation or its suppliers or
+# licensors. Title to the Material remains with Intel Corporation or its suppliers
+# and licensors. The Material may contain trade secrets and proprietary    and
+# confidential information of Intel Corporation and its suppliers and licensors,
+# and is protected by worldwide copyright and trade secret laws and treaty
+# provisions. No part of the Material may be used, copied, reproduced, modified,
+# published, uploaded, posted, transmitted, distributed, or disclosed in any way
+# without Intel's prior express written permission.
+#
+# No license under any patent, copyright, trade secret or other intellectual
+# property right is granted to or conferred upon you by disclosure or delivery
+# of the Materials, either expressly, by implication, inducement, estoppel or
+# otherwise. Any license under such intellectual property rights must be
+# express and approved by Intel in writing.
+#
+# Unless otherwise agreed by Intel in writing, you may not remove or alter
+# this notice or any other notice embedded in Materials by Intel or
+# Intel's suppliers or licensors in any way.
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = PlatformInitPreMem
+  FILE_GUID                      = EE685731-CFF3-4ee7-9388-7E63FC5A59B0
+  MODULE_TYPE                    = PEIM
+  ENTRY_POINT                    = PlatformInitPreMemEntry
+
+[Sources]
+  Test.c
+  PlatformPchInit.c
+  FlashDescriptorUpdate.c
+  Common/FlashMap.c
+  Common/Stall.c
+  MemoryPeim.c
+  MemoryCallback.c
+  PlatformInitPreMem.c
+  Recovery.c
+  SioInitPeim.c
+
+[Packages]
+  MdeModulePkg/MdeModulePkg.dec
+  MdePkg/MdePkg.dec
+#
+# RestrictedBegin
+#
+  OvmfPkg/OvmfPkg.dec
+#
+# RestrictedEnd
+#
+  BpCommonPkg/BpCommonPkg.dec
+  CpRcPkg/CpRcPkg.dec
+  ServerSiliconPkg/SiliconPkg.dec
+  ServerPlatformPkg/PlatformPkg.dec
+  ServerRestrictedPkg/CpuSv/PlatformSvRestrictedPkg.dec #InternalOnlyContent
+  ServerRestrictedPkg/CpuSv/SvBios/Core/MerlinXPkg/6.9/MerlinX.dec  #InternalOnlyContent
+  SecurityPkg/SecurityPkg.dec
+  CryptoPkg/CryptoPkg.dec
+  UefiCpuPkg/UefiCpuPkg.dec
+  ServerSiliconPkg/Cpu/CpuRcPkg.dec
+
+[LibraryClasses]
+  PeiServicesLib
+  PeimEntryPoint
+  DebugLib
+  HobLib
+  IoLib
+  PciLib
+  PlatformHooksLib
+  PreSiliconEnvDetectLib
+  PcdLib
+  PrintLib
+  PeiServicesTablePointerLib
+  PciExpressLib
+  BaseCryptLib
+  CmosAccessLib
+  MeTypeLib
+  SetupLib
+  PeiPolicyInitLib
+  PeiPlatformHookLib
+  PchInitLib
+  PchPcrLib
+  PchInfoLib
+  SerialPortLib
+  ReportStatusCodeLib
+  MtrrLib
+  GpioLib
+  PeiIioSiPolicyLib
+  PeiIioSiPolicyUpdateLib
+  UbaPlatLib
+  TestPointCheckLib
+  EmulationConfigurationLib
+  PmcLib
+  CpuTypeLib
+
+[Pcd]
+  gPlatformModuleTokenSpaceGuid.PcdBootState
+  gEfiSecurityPkgTokenSpaceGuid.PcdTpmPhysicalPresence
+  gEfiSecurityPkgTokenSpaceGuid.PcdMePttSuppressCommandSend                ## PRODUCES
+  gEfiSecurityPkgTokenSpaceGuid.PcdTpmInstanceGuid                     ## CONSUMES
+  gEfiSecurityPkgTokenSpaceGuid.PcdTpmAutoDetection                    ## CONSUMES
+  gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress
+  gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel
+  gEfiMePkgTokenSpaceGuid.PcdMePlatformResetType
+  gPlatformTokenSpaceGuid.PcdDfxAdvDebugJumper
+  gPlatformTokenSpaceGuid.PcdWakeupType
+  gPlatformTokenSpaceGuid.PcdImr2Enable
+  gPlatformTokenSpaceGuid.PcdImr2Size
+  gPlatformModuleTokenSpaceGuid.PcdTestPointFeatureSupport
+  gPlatformTokenSpaceGuid.PcdLpcEnableDecodingSet                      ##CONSUMES
+#
+# RestrictedBegin
+#
+  gUefiOvmfPkgTokenSpaceGuid.PcdOvmfHostBridgePciDevId
+#
+# RestrictedEnd
+#
+  gCpuPkgTokenSpaceGuid.PcdCpuIEDRamSize
+  gPlatformModuleTokenSpaceGuid.PcdLtConfigLockEnable
+
+[PcdEx]
+  gReferenceCodePolicyTokenSpaceGuid.PcdDfxRstCplBitsEn
+  gReferenceCodePolicyTokenSpaceGuid.PcdDfxB2PErrAssertAtCommand
+  gSiPkgTokenSpaceGuid.PcdDfxWarmResetEliminationEn
+
+[FixedPcd]
+  gEfiCpRcPkgTokenSpaceGuid.PcdMaxCpuSocketCount
+  gEfiCpRcPkgTokenSpaceGuid.PcdMaxCpuCoreCount
+
+[FeaturePcd]
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFrameworkCompatibilitySupport         ## CONSUMES
+
+[Guids]
+  gEfiSetupVariableGuid
+  gPchSetupVariableGuid
+  gPchRestrictedSetupVariableGuid  #InternalOnlyContent
+  gEfiMeRcVariableGuid
+  gEfiSocketIioVariableGuid
+  gEfiSocketCommonRcVariableGuid
+  gEfiSocketMpLinkVariableGuid
+  gEfiSocketMemoryVariableGuid
+  gEfiSocketProcessorCoreVarGuid
+  gEfiPlatformInfoGuid
+  gEfiMemoryTypeInformationGuid
+  gEfiFlashMapHobGuid
+  gPeiCapsuleOnDataCDGuid
+  gPeiCapsuleOnFatIdeDiskGuid
+  gPeiCapsuleOnFatUsbDiskGuid
+  gEfiMdeModulePkgTokenSpaceGuid
+  gEfiPlatformTxtPolicyDataGuid
+  gEfiBiosIdGuid
+  gEfiAdminPasswordHobGuid
+  gEfiMemoryMapGuid
+  gPchGlobalResetGuid
+  gIioSiPolicyHobGuid
+  gImr2BaseAddressHobGuid
+  gEfiTpmDeviceInstanceNoneGuid
+  gPlatformModuleTokenSpaceGuid
+  gMegaBlockGuid   #InternalOnlyContent
+
+[Ppis]
+  gPeiBaseMemoryTestPpiGuid         ## PRODUCES
+  gPchUsbPolicyPpiGuid              ## PRODUCES
+  gEfiPeiStallPpiGuid
+  gPeiFlashMapPpiGuid
+  gEfiPeiBootInRecoveryModePpiGuid
+  gEfiPeiRecoveryModulePpiGuid
+  gEfiPeiMemoryDiscoveredPpiGuid
+  gPeiPlatformMemorySizePpiGuid
+  gEfiPeiReadOnlyVariable2PpiGuid
+  gEfiPeiMasterBootModePpiGuid
+  gEfiPeiResetPpiGuid
+  gPeiSmbusPolicyPpiGuid
+  gEfiEndOfPeiSignalPpiGuid
+  gPeiAtaPolicyPpiGuid
+  gPeiCachePpiGuid
+  gPchPlatformPolicyPpiGuid
+  gEfiPeiVirtualBlockIoPpiGuid
+  gEfiPeiDeviceRecoveryModulePpiGuid
+  gEfiPeiSmbus2PpiGuid
+  gPchInitPpiGuid
+  gPchResetPpiGuid
+  gPchSpiPpiGuid
+  gEfiSiliconRcHobsReadyPpi
+  gReferenceCodePolicyPpiGuid
+  gEfiAfterKtiRcGuid
+
+[Depex]
+  gPchSpiPpiGuid AND
+  gEmulationHobGuid AND
+  gUpdatePcdGuid AND
+  gUpdateBootModePpiGuid
+
+[FixedPcd]
+
+
+gCpPlatFlashTokenSpaceGuid.PcdFlashAreaBase
+
+gCpPlatFlashTokenSpaceGuid.PcdBiosSize
+gCpPlatFlashTokenSpaceGuid.PcdBiosBase
+#gCpPlatFlashTokenSpaceGuid.PcdCpuAddressWidthLimit
+gCpPlatFlashTokenSpaceGuid.PcdFlashBase
+gCpPlatFlashTokenSpaceGuid.PcdFlashSize
+gCpPlatFlashTokenSpaceGuid.PcdFlashBlockSize
+
+
+# for PeiSec FD
+
+
+
+gCpPlatFlashTokenSpaceGuid.PcdFlashFdSecPeiBase
+gCpPlatFlashTokenSpaceGuid.PcdFlashFdSecPeiSize
+
+gCpuUncoreTokenSpaceGuid.PcdFlashNvStorageMicrocodeBase
+gCpuUncoreTokenSpaceGuid.PcdFlashNvStorageMicrocodeSize
+
+
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvMrcNormalSize
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvMrcNormalBase
+
+
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvAcmRegionSize
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvAcmRegionBase
+
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvAcmSize
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvAcmBase
+
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvSecPeiBase
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvSecPeiSize
+
+
+
+# for Main FD
+
+gCpPlatFlashTokenSpaceGuid.PcdFlashFdMainBase
+gCpPlatFlashTokenSpaceGuid.PcdFlashFdMainSize
+
+
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvMainSize
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvMainBase
+
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvMainSizeCpx
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvMainBaseCpx
+
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvOemLogoSize
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvOemLogoBase
+
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvWheaSize
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvWheaBase
+
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageVariableBase
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageVariableSize
+
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareBase
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareSize
+
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwWorkingBase
+  gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwWorkingSize
+
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvNvStorageEventLogSize
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvNvStorageEventLogBase
+
+#gCpPlatFlashTokenSpaceGuid.PcdPTUFlashAreaBaseAddress
+#gCpPlatFlashTokenSpaceGuid.PcdMEFlashAreaBaseAddress
+
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvOpromBase
+gCpPlatFlashTokenSpaceGuid.PcdFlashFvOpromSize
+
+
+## This PCD specifies the size of the physical device containing the BIOS, SMBIOS will use it.
+
+
+gCpPlatFlashTokenSpaceGuid.PcdFlashBackupRegionBase
+gCpPlatFlashTokenSpaceGuid.PcdFlashBackupRegionSize
+
+  gSiPkgTokenSpaceGuid.PcdAcpiBaseAddress
+  gSiPkgTokenSpaceGuid.PcdTcoBaseAddress
+
